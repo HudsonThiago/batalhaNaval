@@ -13,27 +13,43 @@ export const io = new Server(server, {
   }
 });
 
-server.listen(porta, () => {
-  console.log('server running at http://localhost:3000');
-});
-
-let connections = 0;
-let jogadores = []
+let players = []
 
 io.on('connection', (socket) => {
-  connections++;
   console.log('a user connected | id: '+socket.id);
 
-  socket.on('player', (player) => {
-    player['id'] = player.id
-    jogadores.push(player)
-    console.log(jogadores)
-  })
-  
-  socket.on('disconnect', () => {
-    console.log(jogadores)
-    jogadores = jogadores.filter(j=>j.id !== socket.id)
+  socket.on('emitPlayer', (emitPlayer) => {
+    emitPlayer['id'] = socket.id
+    emitPlayer['lobbyId'] = emitPlayer.lobbyId
+    players.push(emitPlayer)
+    socket.join(emitPlayer.lobbyId)
+    let playersInLobby = findPlayersInLobby(emitPlayer.lobbyId)
+
+    io.to(emitPlayer.lobbyId).emit("getPlayersInLobby", playersInLobby)
+
   })
 
-  io.emit('playersInLobby', jogadores)
+  socket.on('gameStart', () => {
+    let player = findPlayer(socket.id);
+    socket.join(player.lobbyId)
+    io.to(player.lobbyId).emit("gameStart")
+  })
+
+
+  socket.on('disconnect', () => {
+    players = players.filter(j=>j.id !== socket.id)
+  })
+  
 });
+
+server.listen(porta, () => {
+  console.log('server is running');
+});
+
+const findPlayersInLobby =(lobbyId)=>{
+  return players.filter(p=>p.lobbyId == lobbyId)
+}
+
+const findPlayer =(id)=>{
+  return players.filter(j=>j.id == id)
+}
