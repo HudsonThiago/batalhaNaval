@@ -8,17 +8,18 @@ Jogo da batalha naval utilizando express e socket.io
 Para fazer o deploy desse projeto rode
 
 cliente
-bash
+```bash
 cd client
 
 npm install
 
 npm run dev
-
+```
 servidor
-bash
+```bash
 cd server
 
 npm install
 
 npm run dev
+```

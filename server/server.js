@@ -19,13 +19,19 @@ io.on('connection', (socket) => {
   console.log('a user connected | id: '+socket.id);
 
   socket.on('emitPlayer', (emitPlayer) => {
-    emitPlayer['id'] = socket.id
-    emitPlayer['lobbyId'] = emitPlayer.lobbyId
-    players.push(emitPlayer)
-    socket.join(emitPlayer.lobbyId)
-    let playersInLobby = findPlayersInLobby(emitPlayer.lobbyId)
-
-    io.to(emitPlayer.lobbyId).emit("getPlayersInLobby", playersInLobby)
+    let playersInLobby = findPlayersInLobby(emitPlayer.lobbyId);
+    if(playersInLobby.length < 2){
+      emitPlayer['id'] = socket.id
+      emitPlayer['lobbyId'] = emitPlayer.lobbyId
+      players.push(emitPlayer)
+      socket.join(emitPlayer.lobbyId)
+      let playersInLobby = findPlayersInLobby(emitPlayer.lobbyId)
+  
+      io.to(emitPlayer.lobbyId).emit("getPlayersInLobby", playersInLobby)
+      socket.emit("updatePlayer", emitPlayer)
+    } else {
+      socket.emit("error", "Esta sala já está ocupada, tente outra sala")
+    }
 
   })
 
@@ -37,7 +43,9 @@ io.on('connection', (socket) => {
 
 
   socket.on('disconnect', () => {
+    let player = findPlayer(socket.id)
     players = players.filter(j=>j.id !== socket.id)
+    io.to(player.lobbyId).emit("getPlayersInLobby", players)
   })
   
 });

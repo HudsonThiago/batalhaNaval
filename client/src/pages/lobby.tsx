@@ -3,23 +3,28 @@ import { AiOutlineLoading } from "react-icons/ai";
 import { io } from "socket.io-client";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Alert from "../components/alert";
 
 const socket = io("http://localhost:3000")
 
-interface player {
+interface Player {
   id?:string
   name:string
   lobbyId: string
-  leader: boolean
 }
+
+type scene = "MAIN_MENU" | "LOBBY" | "GAME"
 
 export default function Lobby() {
   const navigate = useNavigate();
-  const [interimPlayer,setInterimPlayer] = useState<player>()
-  const [player, setPlayer] = useState<player>()
-  const [playersInLobby, setPlayersInLobby] = useState<player[]>([])
+  const [interimPlayer,setInterimPlayer] = useState<Player>()
+  const [scene, setScene] = useState<scene>("MAIN_MENU")
+  const [player, setPlayer] = useState<Player>()
+  const [playersInLobby, setPlayersInLobby] = useState<Player[]>([])
+  const [errors, setErrors] = useState<any>({});
+  const [messageVisible, setMessageVisible] = useState<boolean>(false);
 
-  const sendPlayer = (player:player) => {
+  const sendPlayer = (player:Player) => {
     socket.emit("emitPlayer", player)
   }
 
@@ -29,12 +34,22 @@ export default function Lobby() {
 
   useEffect(()=>{
     socket.on("getPlayersInLobby",(data)=>{
+      setScene("LOBBY");
       setPlayersInLobby(data)
     })
+
+    socket.on("updatePlayer",(data)=>{
+      setPlayer(data)
+    })
+    
     
     socket.on("gameStart",()=>{
-      console.log("AAAAAAAAAA")
       navigate("/game")
+    })
+
+    socket.on("error",(data)=>{
+      setMessageVisible(true)
+      setErrors({...errors, genericError: data})
     })
   }, [socket])
 
@@ -55,7 +70,7 @@ export default function Lobby() {
           placeholder="ID da sala" 
           name="playerName" 
           id="playerName" 
-          onChange={(v)=>setInterimPlayer({...interimPlayer, lobbyId: v.target.value} as player)}
+          onChange={(v)=>setInterimPlayer({...interimPlayer, lobbyId: v.target.value} as Player)}
         />
         <input 
           className=" w-full bg-white/20 rounded-sm p-2 text-white focus:border-pink-500 focus:outline-hidden" 
@@ -64,7 +79,7 @@ export default function Lobby() {
           placeholder="Nome do jogador" 
           name="playerName" 
           id="playerName" 
-          onChange={(v)=>setInterimPlayer({...interimPlayer, name: v.target.value} as player)}
+          onChange={(v)=>setInterimPlayer({...interimPlayer, name: v.target.value} as Player)}
         />
         <button onClick={submit} className=" m-auto bg-pink-500 rounded-sm p-2 w-40 text-white font-bold cursor-pointer" type="button">Avançar</button>
       </div>
@@ -104,16 +119,32 @@ export default function Lobby() {
     )
   }
 
+  const sceneManager=()=>{
+    if(scene=="MAIN_MENU"){
+      return registerScreen()
+    } else if(scene == "LOBBY") {
+      return lobbyScreen()
+    } else {
+      return registerScreen()
+    }
+  }
+
   return (
-    <div className="w-full h-full flex justify-center items-center">
-        <div className="bg-stone-50/10 w-96 flex flex-col gap-4 p-4 rounded-sm">
-          <h2 className=" m-auto text-[2rem] mb-8 text-white font-bold">Batalha naval</h2>
-          {
-            player === undefined 
-            ? registerScreen()
-            : lobbyScreen()
-          }
-        </div>
-    </div>
+    <>
+      <div className="absolute">
+        <Alert
+          message={errors.genericError}
+          alertType="ALERT"
+          visible={messageVisible}
+          setVisible={setMessageVisible}
+        />
+      </div>
+      <div className="w-full h-full flex justify-center items-center">
+          <div className="bg-stone-50/10 w-96 flex flex-col gap-4 p-4 rounded-sm">
+            <h2 className=" m-auto text-[2rem] top-0 left-0 mb-8 text-white font-bold">Batalha naval</h2>
+            {sceneManager()}
+          </div>
+      </div>
+    </>
   )
 }
