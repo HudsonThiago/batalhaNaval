@@ -32,13 +32,15 @@ io.on('connection', (socket) => {
     } else {
       socket.emit("error", "Esta sala já está ocupada, tente outra sala")
     }
-
   })
 
   socket.on('gameStart', () => {
-    let player = findPlayer(socket.id);
+    let player = findPlayer(socket.id)
+    console.log(players)
+    console.log(socket.id)
+    
     socket.join(player.lobbyId)
-    io.to(player.lobbyId).emit("gameStart")
+    io.to(player.lobbyId).emit("clientGameStart", "jogo começou")
   })
 
 
