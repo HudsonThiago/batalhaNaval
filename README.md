@@ -2,10 +2,11 @@
 
 Jogo da batalha naval utilizando express e socket.io
 
+## Requisitos
+
+* Node v20
 
 ## Como executar
-
-Para fazer o deploy desse projeto rode
 
 cliente
 ```bash

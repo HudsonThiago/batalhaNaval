@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { ComponentProps, useState } from "react";
 import BoardTile from "../components/boardTile";
 import PortaAvioes from "../components/ships/portaAvioes";
 import Encouracado from "../components/ships/encouracado";
@@ -8,6 +8,10 @@ import Hidroaviao from "../components/ships/hidroaviao";
 import { ShipType } from "../components/ships/defaultShip";
 import { BoardProvider } from "../context/boardContext";
 import Board from "../components/board";
+
+interface SelectionPageProps extends ComponentProps<"div"> {
+  emitBoard:(board:number[])=>void
+}
 
 export interface Ships {
   portaAvioes: number;
@@ -22,13 +26,18 @@ export interface Cursor {
   y?: number;
 }
 
-export default function Main() {
+export default function SelectionPage({emitBoard}:SelectionPageProps) {
   const [ships, setShips] = useState<Ships>({
-    portaAvioes: 1,
-    encouracados: 1,
-    hidroavioes: 2,
+    // portaAvioes: 1,
+    // encouracados: 1,
+    // hidroavioes: 2,
+    // submarinos: 3,
+    // cruzadores: 2,
+    portaAvioes: 0,
+    encouracados: 0,
+    hidroavioes: 0,
     submarinos: 3,
-    cruzadores: 2,
+    cruzadores: 0,
   });
   const [cursor, setCursor] = useState<Cursor | undefined>();
   const [selectedShip, setSelectedShip] = useState<ShipType|undefined>(undefined);
@@ -109,6 +118,7 @@ export default function Main() {
             setShips={setShips}
             selectedShip={selectedShip}
             setSelectedShip={setSelectedShip}
+            emitBoard={emitBoard}
           />
         </div>
       </div>

@@ -1,8 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import Lobby from "../pages/lobby";
-import Main from "../pages/main";
+import Main from "../pages/SelectionPage";
 
 export const routes = createBrowserRouter([
-    {path: "/", element: <Lobby/>},
-    {path: "/game", element: <Main/>}
+    {path: "/", element: <Lobby/>}
 ])

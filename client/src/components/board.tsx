@@ -2,20 +2,23 @@ import { Dispatch, useEffect, useState } from "react";
 import { useBoard } from "../context/boardContext";
 import BoardTile from "./boardTile";
 import { ShipType } from "./ships/defaultShip";
-import { Cursor, Ships } from "../pages/main";
+import { Cursor, Ships } from "../pages/SelectionPage";
+import { AiOutlineLoading } from "react-icons/ai";
 
 interface BoardProps {
   selectedShip?: ShipType;
-  setSelectedShip: Dispatch<React.SetStateAction<ShipType|undefined>>;
+  setSelectedShip: Dispatch<React.SetStateAction<ShipType|undefined>>
   cursor?: Cursor;
-  setCursor: Dispatch<React.SetStateAction<Cursor | undefined>>;
+  setCursor: Dispatch<React.SetStateAction<Cursor | undefined>>
   ships: Ships
-  setShips: Dispatch<React.SetStateAction<Ships>>;
+  setShips: Dispatch<React.SetStateAction<Ships>>
+  emitBoard:(board:number[])=>void
 }
 
-export default function board({cursor, setCursor, selectedShip, setSelectedShip, ships, setShips}:BoardProps){
+export default function board({cursor, setCursor, selectedShip, setSelectedShip, ships, setShips, emitBoard}:BoardProps){
 
   const {board, setBoard, changed, changeState} = useBoard()
+  const [loading, setLoading] = useState<boolean>(false)
 
   const isFull=()=>{
     if(
@@ -93,9 +96,14 @@ export default function board({cursor, setCursor, selectedShip, setSelectedShip,
     return (
       <>
         {getMap()}
-        <div className="flex justify-center items-center gap-6">
+        {!loading ?
+          <div className="flex justify-center items-center gap-6">
           <button
             className={` mt-2 bg-pink-500 w-40 rounded-sm p-2 text-white font-bold cursor-pointer ${!isFull() && 'hidden'}`}
+            onClick={()=>{
+              emitBoard(board)
+              setLoading(true)
+            }}
             type="button"
           >
             Confirmar partida
@@ -108,6 +116,13 @@ export default function board({cursor, setCursor, selectedShip, setSelectedShip,
             Resetar tabuleiro
           </button>
         </div>
+        :
+        <div className="flex justify-center items-center flex-col mt-4">
+          <AiOutlineLoading className=" text-white animate-spin " />
+          <p className="text-white animate-pulse">Aguardando o outro jogador</p>
+        </div>
+        }
+        
       </>
     )
 }

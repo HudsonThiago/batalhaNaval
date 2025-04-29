@@ -4,6 +4,7 @@ import { io } from "socket.io-client";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Alert from "../components/alert";
+import SelectionPage from "./SelectionPage";
 
 const socket = io("http://localhost:3000");
 
@@ -13,7 +14,7 @@ interface Player {
   lobbyId: string;
 }
 
-type scene = "MAIN_MENU" | "LOBBY" | "GAME";
+type scene = "MAIN_MENU" | "LOBBY" | "SELECTION" | "GAME";
 
 export default function Lobby() {
   const navigate = useNavigate();
@@ -29,7 +30,11 @@ export default function Lobby() {
   };
 
   const gameStart = () => {
-    socket.emit("gameStart");
+    socket.emit("gameStart", {room: player?.lobbyId});
+  };
+
+  const emitBoard = (board:number[]) => {
+    socket.emit("emitBoard", {room: player?.lobbyId,board: board});
   };
 
   useEffect(() => {
@@ -42,9 +47,18 @@ export default function Lobby() {
       setPlayer(data);
     });
 
-    socket.on("clientGameStart", (data) => {
+    socket.on("selection", (data) => {
+      console.log("==================")
       console.log(data)
-      navigate("/game");
+      console.log("SELEÇÃO")
+      setScene("SELECTION");
+    });
+
+    socket.on("startGame", (data) => {
+      console.log("==================")
+      console.log(data)
+      console.log("começou")
+      setScene("GAME");
     });
 
     socket.on("error", (data) => {
@@ -59,6 +73,7 @@ export default function Lobby() {
       sendPlayer(interimPlayer);
     }
   };
+
 
   const registerScreen = () => {
     return (
@@ -166,6 +181,8 @@ export default function Lobby() {
       return registerScreen();
     } else if (scene == "LOBBY") {
       return lobbyScreen();
+    } else if (scene == "SELECTION") {
+      return <SelectionPage emitBoard={emitBoard} />;
     } else {
       return registerScreen();
     }

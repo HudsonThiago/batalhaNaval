@@ -1,5 +1,5 @@
 import { ComponentProps, useEffect, useState, Dispatch } from "react";
-import { Cursor, Ships } from "../pages/main";
+import { Cursor, Ships } from "../pages/SelectionPage";
 import { ShipType } from "./ships/defaultShip";
 import { useBoard } from "../context/boardContext";
 
@@ -209,7 +209,7 @@ export default function BoardTile({
     if (x == 0 && y > 0) {
       return (
         <div
-          className="w-4 xl:w-8 h-4 xl:h-8 bg-white/100 rounded-sm shadow-sm shadow-pink-200 select-none flex justify-center items-center font-bold text-stone-700 "
+          className="w-6 xl:w-8 h-6 xl:h-8 bg-white/100 rounded-sm shadow-sm shadow-pink-200 select-none flex justify-center items-center font-bold text-stone-700 "
           key={"tile-" + index}
         >
           {String.fromCharCode(64 + y)}
@@ -218,7 +218,7 @@ export default function BoardTile({
     } else if (y == 0 && x > 0) {
       return (
         <div
-          className="w-4 xl:w-8 h-4 xl:h-8 bg-white/100 rounded-sm shadow-sm shadow-pink-200 select-none flex justify-center items-center font-bold text-stone-700 "
+          className="w-6 xl:w-8 h-6 xl:h-8 bg-white/100 rounded-sm shadow-sm shadow-pink-200 select-none flex justify-center items-center font-bold text-stone-700 "
           key={"tile-" + index}
         >
           {x}
@@ -232,7 +232,7 @@ export default function BoardTile({
               <div
                 onMouseEnter={() => setCursor({ x: coords.x, y: coords.y })}
                 onMouseLeave={() => setCursor({ x: undefined, y: undefined })}
-                className={`w-4 xl:w-8 h-4 xl:h-8 bg-green-300/80 animate-pulse rounded-sm select-none cursor-pointer flex justify-center items-center`}
+                className={`w-6 xl:w-8 h-6 xl:h-8 bg-green-300/80 animate-pulse rounded-sm select-none cursor-pointer flex justify-center items-center`}
                 key={"tile-" + index}
                 onClick={()=>{
                   if(ships.submarinos>0){
@@ -252,7 +252,7 @@ export default function BoardTile({
                 <div
                   onMouseEnter={() => setCursor({ x: coords.x, y: coords.y })}
                   onMouseLeave={() => setCursor({ x: undefined, y: undefined })}
-                  className={`w-4 xl:w-8 h-4 xl:h-8 bg-orange-300/80 animate-pulse rounded-sm select-none cursor-pointer flex justify-center items-center`}
+                  className={`w-6 xl:w-8 h-6 xl:h-8 bg-orange-300/80 animate-pulse rounded-sm select-none cursor-pointer flex justify-center items-center`}
                   key={"tile-" + index}
                   onClick={()=>{
                     if(ships.cruzadores>0){
@@ -274,7 +274,7 @@ export default function BoardTile({
               <div
                 onMouseEnter={() => setCursor({ x: coords.x, y: coords.y })}
                 onMouseLeave={() => setCursor({ x: undefined, y: undefined })}
-                className={`w-4 xl:w-8 h-4 xl:h-8 bg-red-300/80 animate-pulse rounded-sm select-none cursor-pointer flex justify-center items-center`}
+                className={`w-6 xl:w-8 h-6 xl:h-8 bg-red-300/80 animate-pulse rounded-sm select-none cursor-pointer flex justify-center items-center`}
                 key={"tile-" + index}
                 onClick={()=>{
                   if(ships.encouracados>0){
@@ -296,7 +296,7 @@ export default function BoardTile({
               <div
                 onMouseEnter={() => setCursor({ x: coords.x, y: coords.y })}
                 onMouseLeave={() => setCursor({ x: undefined, y: undefined })}
-                className={`w-4 xl:w-8 h-4 xl:h-8 bg-yellow-100/80 animate-pulse rounded-sm select-none cursor-pointer flex justify-center items-center`}
+                className={`w-6 xl:w-8 h-6 xl:h-8 bg-yellow-100/80 animate-pulse rounded-sm select-none cursor-pointer flex justify-center items-center`}
                 key={"tile-" + index}
                 onClick={()=>{
                   if(ships.portaAvioes>0){
@@ -320,7 +320,7 @@ export default function BoardTile({
                 <div
                   onMouseEnter={() => setCursor({ x: coords.x, y: coords.y })}
                   onMouseLeave={() => setCursor({ x: undefined, y: undefined })}
-                  className={`w-4 xl:w-8 h-4 xl:h-8 bg-cyan-200/80 animate-pulse rounded-sm select-none cursor-pointer flex justify-center items-center`}
+                  className={`w-6 xl:w-8 h-6 xl:h-8 bg-cyan-200/80 animate-pulse rounded-sm select-none cursor-pointer flex justify-center items-center`}
                   key={"tile-" + index}
                   onClick={()=>{
                     if(ships.hidroavioes>0){
@@ -344,7 +344,7 @@ export default function BoardTile({
                 onMouseEnter={() => setCursor({ x: coords.x, y: coords.y })}
                 onMouseLeave={() => setCursor({ x: undefined, y: undefined })}
                 onClick={()=>status()}
-                className={`w-4 xl:w-8 h-4 xl:h-8 bg-white/60 rounded-sm shadow-sm shadow-pink-200 select-none cursor-pointer flex justify-center items-center ${
+                className={`w-6 xl:w-8 h-6 xl:h-8 bg-white/60 rounded-sm shadow-sm shadow-pink-200 select-none cursor-pointer flex justify-center items-center ${
                   !selectedShip && "hover:bg-white/80 hover:animate-pulse"
                 }`}
                 key={"tile-" + index}
@@ -356,7 +356,7 @@ export default function BoardTile({
             <div
               onMouseEnter={() => setCursor({ x: coords.x, y: coords.y })}
               onMouseLeave={() => setCursor({ x: undefined, y: undefined })}
-              className={`w-4 xl:w-8 h-4 xl:h-8 bg-pink-500 rounded-sm shadow-sm select-none cursor-pointer flex justify-center items-center`}
+              className={`w-6 xl:w-8 h-6 xl:h-8 bg-pink-500 rounded-sm shadow-sm select-none cursor-pointer flex justify-center items-center`}
               key={"tile-" + index}
             ></div>
           )
@@ -364,7 +364,7 @@ export default function BoardTile({
       } else {
         return (
           <div
-            className="w-4 xl:w-8 h-4 xl:h-8 rounded-sm shadow-sm select-none flex justify-center items-center "
+            className="w-6 xl:w-8 h-6 xl:h-8 rounded-sm shadow-sm select-none flex justify-center items-center "
             key={"tile-" + index}
           ></div>
         )
