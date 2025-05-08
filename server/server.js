@@ -58,10 +58,18 @@ io.on('connection', (socket) => {
     player['attackBoard'] = attackBoard
     updatePlayers(player)
     let player2 = findSecondPlayer(player.lobbyId, player.id)
-    nextTurn()
-    io.to(player.id).emit("updatePlayer", player)
-    io.to(room).emit("updateTurn", {playerTurn: playerTurn})
-    io.to(player2.id).emit("setEnemyPlayer", {enemyPlayer: player})
+
+    let winner = comparaVetores(player2.board, attackBoard)
+    console.log(winner)
+
+    if(winner){
+      io.to(room).emit("winner", {winnerPlayer: player})
+    } else {
+      nextTurn()
+      io.to(player.id).emit("updatePlayer", player)
+      io.to(room).emit("updateTurn", {playerTurn: playerTurn})
+      io.to(player2.id).emit("setEnemyPlayer", {enemyPlayer: player})
+    }
   })
 
 
@@ -113,4 +121,18 @@ const nextTurn=()=>{
   } else {
     playerTurn = 1
   }
+}
+
+function comparaVetores(board, attackBoard) {
+  if(board == null || attackBoard == null){
+    return false
+  }
+
+  for (let i = 0; i < board.length; i++) {
+    if (board[i] === 1 && attackBoard[i] !== 1) {
+      return false;
+    }
+  }
+
+  return true;
 }

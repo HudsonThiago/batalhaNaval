@@ -48,7 +48,7 @@ export default function SelectionPage({player, setPlayer, socket, playerTurn}:Se
 
   return (
     <BoardProvider>
-      <div className="absolute bottom-0 xl:right-0 w-full xl:w-80 h-40 xl:h-[100vh] flex flex-wrap flex-row xl:flex-col justify-center items-center gap-2">
+      <div className="absolute right-0 w-40 xl:w-80 h-[100vh] flex flex-wrap flex-row xl:flex-col justify-center items-center gap-2">
         <PortaAvioes
           onClick={() =>
             selectedShip === "PORTA_AVIAO"
@@ -112,7 +112,7 @@ export default function SelectionPage({player, setPlayer, socket, playerTurn}:Se
       </div>
       <div className="w-full h-full flex justify-center items-center">
         <div className="bg-stone-50/10 w-[90%] xl:w-auto mx-auto xl:p-8 p-4 sm:w-96 flex flex-col gap-4 rounded-sm">
-          <h2 className=" flex justify-center w-full m-auto text-[2rem] mb-8 text-white font-bold">
+          <h2 className=" flex justify-center w-full m-auto xl:text-[2rem] text-[1.4rem] mb-8 text-white font-bold">
             Coloque as embarcações
           </h2>
           <Board

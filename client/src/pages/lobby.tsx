@@ -18,7 +18,7 @@ export interface Player {
   attackBoard: number[]
 }
 
-type scene = "MAIN_MENU" | "LOBBY" | "SELECTION" | "GAME";
+type scene = "MAIN_MENU" | "LOBBY" | "SELECTION" | "GAME" | "WINNER";
 
 export default function Lobby() {
   const navigate = useNavigate();
@@ -31,6 +31,7 @@ export default function Lobby() {
   const [playerTurn, setPlayerTurn] = useState<number>(1);
   const [attackBoard, setAttackBoard] = useState<number[] | undefined>(undefined);
   const [enemyPlayer, setEnemyPlayer] = useState<Player>();
+  const [winner, setWinner] = useState<Player>();
 
   const sendPlayer = (player: Player) => {
     socket.emit("emitPlayer", player);
@@ -59,10 +60,15 @@ export default function Lobby() {
       setScene("GAME");
     });
 
+    socket.on("winner", (data) => {
+      setWinner(data.winnerPlayer)
+      setScene("WINNER");
+    });
+
     socket.on("updateTurn", (data) => {
       setTimeout(()=>{
         setPlayerTurn(data.playerTurn)
-      }, 1000)
+      }, 500)
     });
 
     socket.on("error", (data) => {
@@ -184,6 +190,26 @@ export default function Lobby() {
     );
   };
 
+  const winnerScreen=()=>{
+    return (
+      <div className="w-full h-full flex justify-center items-center">
+        <div className="bg-stone-50/10 w-[90%] mx-auto sm:w-96 flex flex-col gap-4 p-4 rounded-sm">
+          <h2 className=" m-auto text-[2rem] top-0 left-0 mb-8 text-white font-bold">
+              {winner?.name} venceu!!
+          </h2>
+          <button
+            className=" border-none bg-none mt-2 text-white cursor-pointer animate-pulse "
+            onClick={()=>{
+              setScene("MAIN_MENU")
+            }}
+          >
+            Voltar para a página inicial
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   const sceneManager = () => {
     if (scene == "MAIN_MENU") {
       return registerScreen();
@@ -193,6 +219,8 @@ export default function Lobby() {
       return <SelectionPage player={player} setPlayer={setPlayer} socket={socket} playerTurn={playerTurn} />;
     } else if (scene == "GAME") {
       return <GamePage player={player} setPlayer={setPlayer} playerTurn={playerTurn} socket={socket} attackBoard={attackBoard} enemyPlayer={enemyPlayer} />;
+    } else if (scene == "WINNER") {
+      return winnerScreen();
     } else {
       return registerScreen();
     }
