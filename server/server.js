@@ -15,6 +15,7 @@ export const io = new Server(server, {
 });
 
 let players = []
+let playerTurn = 1
 
 io.on('connection', (socket) => {
   console.log('a user connected | id: '+socket.id);
@@ -22,10 +23,11 @@ io.on('connection', (socket) => {
   socket.on('emitPlayer', (emitPlayer) => {
     let playersInLobby = findPlayersInLobby(emitPlayer.lobbyId);
     if(playersInLobby.length < 2){
-      emitPlayer['position'] = findPlayersInLobby(emitPlayer.lobbyId).length+1
       emitPlayer['id'] = socket.id
       emitPlayer['lobbyId'] = emitPlayer.lobbyId
+      emitPlayer['position'] = findPlayersInLobby(emitPlayer.lobbyId).length+1
       emitPlayer['board'] = null
+      emitPlayer['attackBoard'] = null
       players.push(emitPlayer)
       socket.join(emitPlayer.lobbyId)
       let playersInLobby = findPlayersInLobby(emitPlayer.lobbyId)
@@ -41,14 +43,25 @@ io.on('connection', (socket) => {
     io.to(room).emit("selection", "jogo começou")
   })
 
-  socket.on('emitBoard', ({room, board}) => {
+  socket.on('emitBoard', ({room, board, attackBoard}) => {
     let player = findPlayer(socket.id)
     player['board'] = board
+    player['attackBoard'] = attackBoard
     updatePlayers(player)
     if(areReady(player.lobbyId)==2){
-      io.to(room).emit("startGame", "jogo começou")
+      io.to(room).emit("startGame", playerTurn)
     }
-    console.log("aguardando o jogo começar")
+  })
+
+  socket.on('emitAttack', ({room, attackBoard}) => {
+    let player = findPlayer(socket.id)
+    player['attackBoard'] = attackBoard
+    updatePlayers(player)
+    let player2 = findSecondPlayer(player.lobbyId, player.id)
+    nextTurn()
+    io.to(player.id).emit("updatePlayer", player)
+    io.to(room).emit("updateTurn", {playerTurn: playerTurn})
+    io.to(player2.id).emit("setEnemyPlayer", {enemyPlayer: player})
   })
 
 
@@ -84,6 +97,20 @@ const findPlayer =(id)=>{
   return players.filter(j=>j.id === id)[0]
 }
 
+const findSecondPlayer=(lobbyId, id)=>{
+  return players.filter(j=>j.lobbyId == lobbyId && j.id !== id)[0]
+}
+
 const areReady=(lobbyId)=>{
   return players.filter((p)=>p.lobbyId === lobbyId && p.board !== null).length
+}
+
+const nextTurn=()=>{
+  if(playerTurn == 1){
+    playerTurn = 2
+  } else if(playerTurn == 2) {
+    playerTurn = 1
+  } else {
+    playerTurn = 1
+  }
 }

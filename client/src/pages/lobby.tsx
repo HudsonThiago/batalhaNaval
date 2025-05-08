@@ -5,13 +5,17 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Alert from "../components/alert";
 import SelectionPage from "./SelectionPage";
+import GamePage from "./GamePage";
 
 const socket = io("http://localhost:3000");
 
-interface Player {
-  id?: string;
-  name: string;
-  lobbyId: string;
+export interface Player {
+  id?: string
+  name: string
+  lobbyId: string
+  position?: number
+  board: number[]
+  attackBoard: number[]
 }
 
 type scene = "MAIN_MENU" | "LOBBY" | "SELECTION" | "GAME";
@@ -24,6 +28,9 @@ export default function Lobby() {
   const [playersInLobby, setPlayersInLobby] = useState<Player[]>([]);
   const [errors, setErrors] = useState<any>({});
   const [messageVisible, setMessageVisible] = useState<boolean>(false);
+  const [playerTurn, setPlayerTurn] = useState<number>(1);
+  const [attackBoard, setAttackBoard] = useState<number[] | undefined>(undefined);
+  const [enemyPlayer, setEnemyPlayer] = useState<Player>();
 
   const sendPlayer = (player: Player) => {
     socket.emit("emitPlayer", player);
@@ -31,10 +38,6 @@ export default function Lobby() {
 
   const gameStart = () => {
     socket.emit("gameStart", {room: player?.lobbyId});
-  };
-
-  const emitBoard = (board:number[]) => {
-    socket.emit("emitBoard", {room: player?.lobbyId,board: board});
   };
 
   useEffect(() => {
@@ -48,23 +51,28 @@ export default function Lobby() {
     });
 
     socket.on("selection", (data) => {
-      console.log("==================")
-      console.log(data)
-      console.log("SELEÇÃO")
       setScene("SELECTION");
     });
 
     socket.on("startGame", (data) => {
-      console.log("==================")
-      console.log(data)
-      console.log("começou")
+      setPlayerTurn(data)
       setScene("GAME");
+    });
+
+    socket.on("updateTurn", (data) => {
+      setTimeout(()=>{
+        setPlayerTurn(data.playerTurn)
+      }, 1000)
     });
 
     socket.on("error", (data) => {
       setMessageVisible(true);
       setErrors({ ...errors, genericError: data });
     });
+
+    socket.on("setEnemyPlayer", (data:any) => {
+      setEnemyPlayer(data.enemyPlayer)
+    })
   }, [socket]);
 
   const submit = () => {
@@ -182,7 +190,9 @@ export default function Lobby() {
     } else if (scene == "LOBBY") {
       return lobbyScreen();
     } else if (scene == "SELECTION") {
-      return <SelectionPage emitBoard={emitBoard} />;
+      return <SelectionPage player={player} setPlayer={setPlayer} socket={socket} playerTurn={playerTurn} />;
+    } else if (scene == "GAME") {
+      return <GamePage player={player} setPlayer={setPlayer} playerTurn={playerTurn} socket={socket} attackBoard={attackBoard} enemyPlayer={enemyPlayer} />;
     } else {
       return registerScreen();
     }

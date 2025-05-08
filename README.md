@@ -24,3 +24,4 @@ npm install
 
 npm run dev
 ```
+Abri o navegador e entrar no link: http://localhost:5173/

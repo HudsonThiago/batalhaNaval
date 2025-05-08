@@ -1,4 +1,4 @@
-import { ComponentProps, useState } from "react";
+import { ComponentProps, Dispatch, useState } from "react";
 import BoardTile from "../components/boardTile";
 import PortaAvioes from "../components/ships/portaAvioes";
 import Encouracado from "../components/ships/encouracado";
@@ -8,9 +8,13 @@ import Hidroaviao from "../components/ships/hidroaviao";
 import { ShipType } from "../components/ships/defaultShip";
 import { BoardProvider } from "../context/boardContext";
 import Board from "../components/board";
+import { Player } from "./lobby";
 
 interface SelectionPageProps extends ComponentProps<"div"> {
-  emitBoard:(board:number[])=>void
+  player?:Player
+  setPlayer:Dispatch<React.SetStateAction<Player | undefined>>
+  playerTurn: number
+  socket: any
 }
 
 export interface Ships {
@@ -26,7 +30,7 @@ export interface Cursor {
   y?: number;
 }
 
-export default function SelectionPage({emitBoard}:SelectionPageProps) {
+export default function SelectionPage({player, setPlayer, socket, playerTurn}:SelectionPageProps) {
   const [ships, setShips] = useState<Ships>({
     // portaAvioes: 1,
     // encouracados: 1,
@@ -118,7 +122,11 @@ export default function SelectionPage({emitBoard}:SelectionPageProps) {
             setShips={setShips}
             selectedShip={selectedShip}
             setSelectedShip={setSelectedShip}
-            emitBoard={emitBoard}
+            player={player}
+            setPlayer={setPlayer}
+            actions={true}
+            playerTurn={playerTurn}
+            socket={socket}
           />
         </div>
       </div>
