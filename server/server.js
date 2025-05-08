@@ -60,7 +60,6 @@ io.on('connection', (socket) => {
     let player2 = findSecondPlayer(player.lobbyId, player.id)
 
     let winner = comparaVetores(player2.board, attackBoard)
-    console.log(winner)
 
     if(winner){
       io.to(room).emit("winner", {winnerPlayer: player})
